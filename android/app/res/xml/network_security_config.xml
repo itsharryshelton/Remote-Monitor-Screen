@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- The dashboard is served over plain HTTP on the home LAN, so cleartext must be allowed.
+     The app only navigates to the configured dashboard address and its bundled clock page. -->
+<network-security-config>
+    <base-config cleartextTrafficPermitted="true" />
+</network-security-config>

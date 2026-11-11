@@ -1,0 +1,27 @@
+/* Clock face shared by the offline overlay and the standalone clock page. */
+.ck-root {
+  position: fixed;
+  inset: 0;
+  background: #000;
+  display: grid;
+  place-items: center;
+  overflow: hidden;
+  z-index: 50;
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+  font-variant-numeric: tabular-nums;
+  user-select: none;
+}
+.ck-wrap { text-align: center; transition: transform 4s ease-in-out; }
+/* Mid-grey rather than white: easier on an always-on OLED panel. */
+.ck-time { color: #b9bec5; font-weight: 300; line-height: 0.9; letter-spacing: -0.04em; display: flex; align-items: baseline; justify-content: center; gap: 0.08em; }
+.ck-hm { font-size: min(34vw, 62vh); }
+.ck-s { font-size: min(7vw, 13vh); color: #5d636b; font-weight: 400; letter-spacing: 0; }
+.ck-date { color: #7d848c; font-size: min(4.6vw, 8.5vh); margin-top: 0.3em; }
+.ck-status { color: #4d535a; font-size: min(2.6vw, 5vh); margin-top: 0.7em; min-height: 1.2em; }
+.ck-status:empty { visibility: hidden; }
+@media (orientation: portrait) {
+  .ck-hm { font-size: 30vw; }
+  .ck-s { font-size: 7vw; }
+  .ck-date { font-size: 5.5vw; }
+  .ck-status { font-size: 3.6vw; }
+}

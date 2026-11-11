@@ -1,0 +1,23 @@
+{
+  "name": "remote-monitor-screen",
+  "version": "0.1.0",
+  "private": true,
+  "description": "LAN dashboard for a spare phone: live PC stats plus Claude Code agent activity.",
+  "type": "module",
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "start": "node server/index.mjs",
+    "pair": "node scripts/pair.mjs",
+    "hooks:install": "node scripts/install-hooks.mjs",
+    "hooks:uninstall": "node scripts/install-hooks.mjs --remove",
+    "test": "node --test \"test/*.test.mjs\"",
+    "start:bg": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-hidden.ps1",
+    "stop": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/stop.ps1",
+    "firewall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/allow-firewall.ps1",
+    "autostart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-autostart.ps1",
+    "apk:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File android/setup-toolchain.ps1",
+    "apk": "powershell -NoProfile -ExecutionPolicy Bypass -File android/build.ps1"
+  }
+}

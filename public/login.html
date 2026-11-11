@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#000000">
+  <title>Pair device</title>
+  <link rel="stylesheet" href="/login.css">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+</head>
+<body>
+  <form method="post" action="/login" autocomplete="off">
+    <h1>Pair this screen</h1>
+    <p>Enter the 6-digit code shown in the server console on your PC (or run <code>npm run pair</code> there).</p>
+    <input name="code" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required autofocus aria-label="Pairing code" placeholder="000000">
+    <button type="submit">Pair</button>
+    <p class="err" id="bad">That code was not right. Check the console and try again.</p>
+    <p class="err" id="locked">Too many attempts from this device. Wait ten minutes and try again.</p>
+  </form>
+</body>
+</html>

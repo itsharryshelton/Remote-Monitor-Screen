@@ -1,0 +1,111 @@
+<!doctype html>
+<html lang="en-GB">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#000000">
+  <meta name="mobile-web-app-capable" content="yes">
+  <title>Monitor</title>
+  <link rel="manifest" href="/manifest.webmanifest">
+  <link rel="icon" href="/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="/style.css">
+  <link rel="stylesheet" href="/clock.css">
+  <script src="/clock.js" defer></script>
+  <script src="/app.js" defer></script>
+</head>
+<body data-view="split">
+  <div class="app" id="app">
+    <header class="top">
+      <div class="clock">
+        <span id="time" class="time">--:--</span><span id="secs" class="secs">--</span>
+      </div>
+      <div class="when">
+        <div id="date" class="date">&nbsp;</div>
+        <div id="host" class="host">&nbsp;</div>
+      </div>
+      <div class="summary" id="summary"></div>
+      <nav class="controls">
+        <div class="seg" role="tablist" aria-label="View">
+          <button data-view="split" aria-label="Split view">Split</button>
+          <button data-view="system" aria-label="System view">System</button>
+          <button data-view="agents" aria-label="Agents view">Agents</button>
+        </div>
+        <button id="chime" class="icon" aria-label="Toggle chime" title="Chime when an agent finishes or needs you">🔔</button>
+        <button id="fs" class="icon" aria-label="Full screen" title="Full screen">⛶</button>
+        <span id="conn" class="conn" title="Connection"></span>
+      </nav>
+    </header>
+
+    <main>
+      <section class="system" aria-label="System">
+        <article class="tile cpu" id="t-cpu">
+          <div class="head"><span class="label">CPU</span><span class="name" id="cpu-name"></span></div>
+          <div class="row">
+            <div class="big"><span id="cpu-util">--</span><small>%</small></div>
+            <div class="meta">
+              <span id="cpu-temp" class="temp">--°</span>
+              <span id="cpu-clock"></span>
+              <span id="cpu-power"></span>
+            </div>
+          </div>
+          <div class="cores" id="cpu-cores"></div>
+          <canvas class="spark" id="s-cpu"></canvas>
+        </article>
+
+        <article class="tile gpu" id="t-gpu">
+          <div class="head"><span class="label">GPU</span><span class="name" id="gpu-name"></span></div>
+          <div class="row">
+            <div class="big"><span id="gpu-util">--</span><small>%</small></div>
+            <div class="meta">
+              <span id="gpu-temp" class="temp">--°</span>
+              <span id="gpu-hot"></span>
+              <span id="gpu-power"></span>
+            </div>
+          </div>
+          <div class="bar"><i id="gpu-vram-bar"></i></div>
+          <div class="sub"><span id="gpu-vram">VRAM --</span><span id="gpu-fan"></span></div>
+          <canvas class="spark" id="s-gpu"></canvas>
+        </article>
+
+        <article class="tile mem" id="t-mem">
+          <div class="head"><span class="label">Memory</span><span class="name" id="proc-count"></span></div>
+          <div class="row">
+            <div class="big"><span id="mem-pct">--</span><small>%</small></div>
+            <div class="meta"><span id="mem-used">-- / -- GB</span></div>
+          </div>
+          <div class="bar"><i id="mem-bar"></i></div>
+          <canvas class="spark" id="s-mem"></canvas>
+        </article>
+
+        <article class="tile io" id="t-io">
+          <div class="head"><span class="label">Network · Disk</span><span class="name" id="uptime"></span></div>
+          <div class="io-grid">
+            <div><span class="k down">↓</span><span id="net-rx" class="v">--</span></div>
+            <div><span class="k up">↑</span><span id="net-tx" class="v">--</span></div>
+            <div><span class="k rd">R</span><span id="disk-r" class="v">--</span></div>
+            <div><span class="k wr">W</span><span id="disk-w" class="v">--</span></div>
+          </div>
+          <canvas class="spark" id="s-net"></canvas>
+        </article>
+
+        <article class="tile sensors" id="t-sensors">
+          <div class="head"><span class="label">Sensors</span><span class="name" id="sensor-src"></span></div>
+          <div class="sensor-list" id="sensor-list"></div>
+        </article>
+      </section>
+
+      <section class="agents" aria-label="Claude Code agents">
+        <div class="agents-head">
+          <span class="label">Claude Code</span>
+          <span id="agent-counts" class="chips"></span>
+        </div>
+        <div class="sessions" id="sessions"></div>
+        <div class="feed-head label">Activity</div>
+        <ol class="feed" id="feed"></ol>
+      </section>
+    </main>
+  </div>
+  <div class="dimmer" id="dimmer"></div>
+  <div class="ck-root offline-clock" id="offline-clock" hidden></div>
+</body>
+</html>

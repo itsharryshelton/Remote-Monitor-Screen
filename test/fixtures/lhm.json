@@ -1,0 +1,33 @@
+{"id":0,"Text":"Sensor","Min":"Min","Value":"Value","Max":"Max","ImageURL":"","Children":[
+ {"id":1,"Text":"WARPY","Min":"","Value":"","Max":"","ImageURL":"images_icon/computer.png","Children":[
+  {"id":2,"Text":"ASUS ROG STRIX B650E-F","Min":"","Value":"","Max":"","ImageURL":"images_icon/mainboard.png","Children":[
+   {"id":3,"Text":"Nuvoton NCT6799D","Min":"","Value":"","Max":"","ImageURL":"images_icon/chip.png","Children":[
+    {"id":4,"Text":"Fans","Min":"","Value":"","Max":"","ImageURL":"images_icon/fan.png","Children":[
+     {"id":5,"Text":"Fan #1","Min":"0 RPM","Value":"1,021 RPM","Max":"1,450 RPM","ImageURL":"images/transparent.png","Children":[]},
+     {"id":6,"Text":"Fan #2","Min":"0 RPM","Value":"0 RPM","Max":"0 RPM","ImageURL":"images/transparent.png","Children":[]}]},
+    {"id":7,"Text":"Temperatures","Min":"","Value":"","Max":"","ImageURL":"images_icon/temperature.png","Children":[
+     {"id":8,"Text":"Motherboard","Min":"30.0 °C","Value":"34.5 °C","Max":"40.0 °C","ImageURL":"images/transparent.png","Children":[]}]}]}]},
+  {"id":10,"Text":"AMD Ryzen 7 7800X3D","Min":"","Value":"","Max":"","ImageURL":"images_icon/cpu.png","Children":[
+   {"id":11,"Text":"Clocks","Min":"","Value":"","Max":"","ImageURL":"images_icon/clock.png","Children":[
+    {"id":12,"Text":"Core #1","Min":"","Value":"4,850.2 MHz","Max":"5,050.0 MHz","ImageURL":"images/transparent.png","Children":[]}]},
+   {"id":13,"Text":"Temperatures","Min":"","Value":"","Max":"","ImageURL":"images_icon/temperature.png","Children":[
+    {"id":14,"Text":"Core (Tctl/Tdie)","Min":"40.1 °C","Value":"62.4 °C","Max":"81.0 °C","ImageURL":"images/transparent.png","Children":[]},
+    {"id":15,"Text":"CCD1 (Tdie)","Min":"","Value":"58.0 °C","Max":"","ImageURL":"images/transparent.png","Children":[]}]},
+   {"id":16,"Text":"Powers","Min":"","Value":"","Max":"","ImageURL":"images_icon/power.png","Children":[
+    {"id":17,"Text":"Package","Min":"","Value":"48.3 W","Max":"","ImageURL":"images/transparent.png","Children":[]}]},
+   {"id":18,"Text":"Load","Min":"","Value":"","Max":"","ImageURL":"images_icon/load.png","Children":[
+    {"id":19,"Text":"CPU Total","Min":"","Value":"12.5 %","Max":"","ImageURL":"images/transparent.png","Children":[]}]}]},
+  {"id":20,"Text":"AMD Radeon(TM) Graphics","Min":"","Value":"","Max":"","ImageURL":"images_icon/ati.png","Children":[
+   {"id":21,"Text":"Load","Min":"","Value":"","Max":"","ImageURL":"images_icon/load.png","Children":[
+    {"id":22,"Text":"GPU Core","Min":"","Value":"0.0 %","Max":"","ImageURL":"images/transparent.png","Children":[]}]}]},
+  {"id":30,"Text":"AMD Radeon RX 6900 XT","Min":"","Value":"","Max":"","ImageURL":"images_icon/ati.png","Children":[
+   {"id":31,"Text":"Temperatures","Min":"","Value":"","Max":"","ImageURL":"images_icon/temperature.png","Children":[
+    {"id":32,"Text":"GPU Core","Min":"","Value":"55.0 °C","Max":"","ImageURL":"images/transparent.png","Children":[]},
+    {"id":33,"Text":"GPU Hot Spot","Min":"","Value":"68.0 °C","Max":"","ImageURL":"images/transparent.png","Children":[]}]},
+   {"id":34,"Text":"Powers","Min":"","Value":"","Max":"","ImageURL":"images_icon/power.png","Children":[
+    {"id":35,"Text":"GPU Package","Min":"","Value":"121.0 W","Max":"","ImageURL":"images/transparent.png","Children":[]}]},
+   {"id":36,"Text":"Fans","Min":"","Value":"","Max":"","ImageURL":"images_icon/fan.png","Children":[
+    {"id":37,"Text":"GPU Fan","Min":"","Value":"1,200 RPM","Max":"","ImageURL":"images/transparent.png","Children":[]}]},
+   {"id":38,"Text":"Data","Min":"","Value":"","Max":"","ImageURL":"images_icon/power.png","Children":[
+    {"id":39,"Text":"GPU Memory Used","Min":"","Value":"4,812.0 MB","Max":"","ImageURL":"images/transparent.png","Children":[]},
+    {"id":40,"Text":"GPU Memory Total","Min":"","Value":"16,368.0 MB","Max":"","ImageURL":"images/transparent.png","Children":[]}]}]}]}]}
