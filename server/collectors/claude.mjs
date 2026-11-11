@@ -242,6 +242,8 @@ export class SessionState {
     const full = this.detail === 'full';
     return {
       id: this.sessionId,
+      // Subagent transcripts carry the parent's sessionId, so the file name is the stable unique key.
+      key: this.kind === 'sub' && this.file ? path.basename(this.file, '.jsonl') : this.sessionId,
       kind: this.kind,
       project: basename(this.cwd) || null,
       title: this.title,

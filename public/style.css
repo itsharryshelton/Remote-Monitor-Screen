@@ -31,9 +31,10 @@ html, body {
   user-select: none;
 }
 
-body { height: 100dvh; overflow: hidden; }
+body { height: 100vh; height: 100dvh; overflow: hidden; }
 
 .app {
+  height: 100vh;
   height: 100dvh;
   display: grid;
   grid-template-rows: auto minmax(0, 1fr);
@@ -228,7 +229,7 @@ body.dim .dimmer { opacity: var(--dim, 0.65); }
 /* ---------- portrait / small ---------- */
 @media (orientation: portrait) {
   body { height: auto; overflow: auto; }
-  .app { height: auto; min-height: 100dvh; }
+  .app { height: auto; min-height: 100vh; min-height: 100dvh; }
   .top { flex-wrap: wrap; }
   .summary { order: 5; flex-basis: 100%; justify-content: flex-start; }
   main, [data-view="system"] main { grid-template-columns: minmax(0, 1fr); }

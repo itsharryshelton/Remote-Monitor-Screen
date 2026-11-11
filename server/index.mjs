@@ -1,6 +1,7 @@
 // Remote Monitor Screen: LAN dashboard server. Zero runtime dependencies.
 import http from 'node:http';
 import fs from 'node:fs/promises';
+import { readdirSync, statSync } from 'node:fs';
 import path from 'node:path';
 import os from 'node:os';
 import { loadConfig, ROOT } from './config.mjs';
@@ -84,9 +85,30 @@ function broadcast(event, data) {
   const msg = `event: ${event}\ndata: ${JSON.stringify(data)}\n\n`;
   for (const res of clients) res.write(msg);
 }
-function hello() {
-  return { host: os.hostname(), dim: cfg.dim, claude: !!claude, detail: cfg.claude.detail, serverTime: Date.now() };
+/** Changes whenever a dashboard file changes, so open pages (e.g. the kiosk app) know to reload. */
+function uiVersion() {
+  try {
+    return readdirSync(PUBLIC_DIR)
+      .map((f) => { const st = statSync(path.join(PUBLIC_DIR, f)); return st.isFile() ? `${f}:${st.size}:${st.mtimeMs}` : ''; })
+      .join('|')
+      .split('')
+      .reduce((h, c) => (Math.imul(h, 31) + c.charCodeAt(0)) | 0, 0)
+      .toString(36);
+  } catch {
+    return '0';
+  }
 }
+let lastUiVersion = uiVersion();
+function hello() {
+  return { host: os.hostname(), dim: cfg.dim, claude: !!claude, detail: cfg.claude.detail, serverTime: Date.now(), ui: lastUiVersion };
+}
+setInterval(() => {
+  const v = uiVersion();
+  if (v !== lastUiVersion) {
+    lastUiVersion = v;
+    if (clients.size) broadcast('hello', hello());
+  }
+}, 5000).unref();
 setInterval(() => {
   if (clients.size) broadcast('system', system.snapshot());
 }, 1000).unref();

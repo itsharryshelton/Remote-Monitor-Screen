@@ -286,8 +286,15 @@ function renderClaude() {
   if (c.counts.working) chips.push(h('span', { class: 'chip work' }, `${c.counts.working} working`));
   if (c.counts.agents) chips.push(h('span', { class: 'chip work' }, `${c.counts.agents} subagent${c.counts.agents > 1 ? 's' : ''}`));
   if (c.counts.done) chips.push(h('span', { class: 'chip ok' }, `${c.counts.done} done`));
+  const idle = c.sessions.filter((s) => s.status === 'stale').length;
+  if (idle) chips.push(h('span', { class: 'chip' }, `${idle} idle`));
   $('agent-counts').replaceChildren(...chips);
   $('summary').replaceChildren(...chips.map((x) => x.cloneNode(true)));
+
+  if (state.view === 'agents') {
+    window.RmsOffice?.render(c, now);
+    return; // the office replaces the session cards and feed in this view
+  }
 
   const sessions = $('sessions');
   if (!c.sessions.length) {
@@ -460,7 +467,11 @@ function setView(v) {
   store.set('view', v);
   document.body.dataset.view = v;
   document.querySelectorAll('.seg button').forEach((b) => b.classList.toggle('on', b.dataset.view === v));
-  requestAnimationFrame(drawSparks);
+  requestAnimationFrame(() => {
+    drawSparks();
+    if (v === 'agents') window.RmsOffice?.refit();
+    else if (state.claude) renderClaude();
+  });
 }
 
 function setupControls() {
@@ -509,7 +520,10 @@ let es;
 function connect() {
   es = new EventSource('/api/stream');
   es.addEventListener('hello', (e) => {
-    state.hello = JSON.parse(e.data);
+    const next = JSON.parse(e.data);
+    // Dashboard files changed on the PC (update, or server restarted with new code): load them.
+    if (state.hello?.ui && next.ui && next.ui !== state.hello.ui) return location.reload();
+    state.hello = next;
     if (!state.hello.claude) document.querySelector('.agents').classList.add('off');
   });
   es.addEventListener('system', (e) => onSystem(JSON.parse(e.data)));
@@ -528,6 +542,7 @@ function connect() {
 }
 
 if (window.RmsNative) document.body.classList.add('in-app');
+window.RmsOffice?.mount($('office'), { card: sessionCard, dur, ago, model });
 setupControls();
 setView(state.view);
 tick();

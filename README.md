@@ -5,6 +5,7 @@ Turns a spare Android phone (built for a OnePlus Nord AC2003, works on anything 
 - **System**: CPU % (Task Manager figure) with per-core bars and effective clock, GPU % (max engine, same as Task Manager) with VRAM, memory, network and disk throughput, 2-minute sparklines, clock and uptime.
 - **Temperatures, fans, power**: CPU Tctl/Tdie, GPU core/hotspot, GPU power and fan, motherboard fans, via LibreHardwareMonitor (optional, see below).
 - **Claude Code**: every active Claude Code session (VS Code extension and CLI), what each is doing right now (tool, file, command description), elapsed time, last prompt, to-do progress, context size, background subagents, plus a live activity feed. With the optional hook it also shows when a session is **waiting for your permission**, with a chime and vibration.
+- **Agents view (office)**: each session and each subagent is a person at a desk, with desks grouped into pods by project. A chat bubble shows what each one is doing right now (tool and file, thinking, needs you, done). Sessions that stay quiet walk off to the break room for a nap. Tap a person to see the full session card.
 
 Read-only. Nothing on the phone can control the PC or Claude.
 
