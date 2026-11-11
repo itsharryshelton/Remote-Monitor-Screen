@@ -276,6 +276,7 @@ export class ClaudeWatcher {
     this.log = log;
     this.files = new Map(); // file path -> { state, offset, partial, mtime, parent }
     this.hooks = new Map(); // sessionId -> latest hook info
+    this.benches = new Map(); // sessionId -> when it was sent to the break room
     this.events = [];
     this.lastScan = 0;
     this.busy = false;
@@ -476,6 +477,31 @@ export class ClaudeWatcher {
     }
   }
 
+  #mainState(sessionId) {
+    for (const t of this.files.values()) if (t.state.kind === 'main' && t.state.sessionId === sessionId) return t.state;
+    return null;
+  }
+
+  /** Send a main session to the break room (it stops at its next tool call), or bring it back. */
+  bench(sessionId, on, now = Date.now()) {
+    if (typeof sessionId !== 'string' || !this.#mainState(sessionId)) return false;
+    if (on) this.benches.set(sessionId, now);
+    else this.benches.delete(sessionId);
+    return true;
+  }
+
+  /** Benched until the next prompt you send it. */
+  isBenched(sessionId) {
+    const at = this.benches.get(sessionId);
+    if (!at) return false;
+    const prompt = this.#mainState(sessionId)?.lastPrompt?.ts;
+    if (prompt && prompt > at) {
+      this.benches.delete(sessionId);
+      return false;
+    }
+    return true;
+  }
+
   snapshot(now = Date.now()) {
     const cutoff = now - this.windowMs;
     const mains = new Map();
@@ -500,7 +526,7 @@ export class ClaudeWatcher {
         view.text = `${running} agent${running > 1 ? 's' : ''} running`;
         view.since = Math.min(...subs.filter((s) => s.status === 'working').map((s) => s.since || now));
       }
-      return { ...view, subagents: subs, runningSubagents: running };
+      return { ...view, benched: this.isBenched(view.id), subagents: subs, runningSubagents: running };
     });
     sessions.sort((a, b) => (rank[a.status] - rank[b.status]) || (b.lastActivity - a.lastActivity));
     this.#trimEvents();

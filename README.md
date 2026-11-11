@@ -5,9 +5,9 @@ Turns a spare Android phone (built for a OnePlus Nord AC2003, works on anything 
 - **System**: CPU % (Task Manager figure) with per-core bars and effective clock, GPU % (max engine, same as Task Manager) with VRAM, memory, network and disk throughput, 2-minute sparklines, clock and uptime.
 - **Temperatures, fans, power**: CPU Tctl/Tdie, GPU core/hotspot, GPU power and fan, motherboard fans, via LibreHardwareMonitor (optional, see below).
 - **Claude Code**: every active Claude Code session (VS Code extension and CLI), what each is doing right now (tool, file, command description), elapsed time, last prompt, to-do progress, context size, background subagents, plus a live activity feed. With the optional hook it also shows when a session is **waiting for your permission**, with a chime and vibration.
-- **Agents view (office)**: each session and each subagent is a person at a desk, with desks grouped into pods by project. A chat bubble shows what each one is doing right now (tool and file, thinking, needs you, done). Sessions that stay quiet walk off to the break room for a nap. Tap a person to see the full session card.
+- **Agents view (office)**: each session and each subagent is a person at a desk, with desks grouped into pods by project. A chat bubble shows what each one is doing right now (tool and file, thinking, needs you, done). Sessions that stay quiet walk off to the break room for a nap, and idle people now and then wander over to the kitchen table. A session running two or more subagents gets a whiteboard (its task, to-do progress, a sticky note per subagent) and its subagents stand in front of it. The floor grows with the number of sessions: it scales down to a readable size, then scrolls (swipe), drifting through the office on its own and jumping to anyone who needs you. Tap a person to see the full session card. Long-press a person to pick them up: drop a session in the break room to stop it.
 
-Read-only. Nothing on the phone can control the PC or Claude.
+Read-only, with one exception: in the Agents view you can drag a session to the break room to stop it (see [Stopping a session from the phone](#stopping-a-session-from-the-phone); set `control: false` to turn that off). Nothing else on the phone can control the PC or Claude.
 
 > **Prototype.** This was generated with AI assistance and has not been reviewed by a qualified person. Treat it as a personal prototype for a trusted home network, not a finished product.
 
@@ -48,7 +48,8 @@ A tiny kiosk app (`android/`, plain Java WebView, about 20 KB) that:
 - vibrates on agent alerts
 - the **back** gesture opens settings: dashboard address, reload, exit
 
-Build (one-off toolchain download of about 500 MB into `%LOCALAPPDATA%ms-android`; no admin, no Android Studio; accepts the Android SDK licence):
+Build (one-off toolchain download of about 500 MB into `%LOCALAPPDATA%
+ms-android`; no admin, no Android Studio; accepts the Android SDK licence):
 
 ```powershell
 npm run apk:setup                                  # JDK 17 + Android SDK command-line tools
@@ -59,13 +60,16 @@ npm run apk                                        # -> androiduildRemoteMonito
 Install, either way:
 
 - **From the phone**: pair in Chrome first (see Quick start), then open `http://10.0.100.10:7865/app.apk`, allow Chrome to install unknown apps when asked, and install. Pair once more inside the app (it has its own cookie store).
-- **USB**: enable USB debugging, then `%LOCALAPPDATA%ms-androidsdkplatform-toolsadb.exe install -r androiduildRemoteMonitor.apk`.
+- **USB**: enable USB debugging, then `%LOCALAPPDATA%
+ms-androidsdkplatform-toolsadb.exe install -r androiduildRemoteMonitor.apk`.
 
 **Keep Android System WebView updated** (Play Store → search "Android System WebView" → Update). The app renders with it, and an old WebView misses security fixes; the test Nord shipped with version 92 from 2021.
 
 When the PC is off, Windows Firewall silently drops connections rather than refusing them, so the app checks the PC with a 3 second timeout before loading and falls back to the clock if a load stalls for 10 seconds.
 
-The signing key is created on first build at `%LOCALAPPDATA%ms-androidms-signing.jks` (password beside it, outside the repo). Keep it: Android only installs updates signed with the same key.
+The signing key is created on first build at `%LOCALAPPDATA%
+ms-android
+ms-signing.jks` (password beside it, outside the repo). Keep it: Android only installs updates signed with the same key.
 
 The dashboard in a normal browser also switches to the clock when the PC goes offline, but only while the page stays open: if Chrome reloads the tab while the PC is off you get Chrome's error page. The app avoids that.
 
@@ -125,11 +129,24 @@ Session states:
 Transcripts cannot tell "running a slow command" from "waiting for you to click Allow". A small Claude Code hook fills that gap:
 
 ```powershell
-npm run hooks:install     # adds Notification + Stop hooks to %USERPROFILE%\.claude\settings.json (backs it up first)
+npm run hooks:install     # adds Notification, Stop and PreToolUse hooks to %USERPROFILE%\.claude\settings.json (backs it up first)
 npm run hooks:uninstall
 ```
 
 The hook (`hooks/relay.mjs`) forwards only the session id, event name and notification message to `127.0.0.1`, authenticated with a key derived from `config.local.json`. It times out in under a second and always exits cleanly, so it cannot stall Claude even if the dashboard is not running. New sessions pick it up; restart open ones.
+
+The `PreToolUse` hook runs before every tool call (about 0.1 s each on Windows) and is what makes the break room work. It prints nothing unless that session has been benched.
+
+### Stopping a session from the phone
+
+In the Agents view, long-press a person until they lift, then drag them:
+
+- **Desk → break room**: benches the session. A toast gives you 4 seconds to **Undo**; then the dashboard tells the server, and the next time that session (or one of its subagents) tries to use a tool, the `PreToolUse` hook answers `continue: false` and Claude Code stops with "Sent to the break room from Remote Monitor Screen". The tool step already running finishes first; a reply being written is not cut off. The person shows "stopping…" on the sofa until the session goes quiet.
+- **Break room → any desk area**: unbenches it (only for benched sessions; idle ones need a new prompt).
+- Sending that session a **new prompt** in Claude Code also unbenches it.
+- Subagents cannot be benched on their own; bench their session.
+
+This needs the hooks installed (above) and `control: true` (the default).
 
 ## Configuration
 
@@ -145,6 +162,7 @@ The hook (`hooks/relay.mjs`) forwards only the session id, event name and notifi
 | `claude.windowMinutes` | `240` | How far back sessions are shown |
 | `allow` | loopback + private ranges | CIDR list of clients allowed to connect |
 | `dim` | `23:00` to `07:00`, level `0.35` | Night dimming; `level` is remaining brightness |
+| `control` | `true` | Allow stopping a session by dragging it to the office break room. `false` makes the dashboard fully read-only |
 | `key` | random | Master secret. Delete to rotate (unpairs every device) |
 
 ## Security notes
@@ -157,6 +175,7 @@ Please read before running this on anything other than a trusted home network.
 - **Secrets**: the master key lives only in `config.local.json` (git-ignored, never sent to the browser). The phone only receives a derived session token. The front end contains no secrets. The `npm run pair` link is equivalent to a password; do not share it. Transcript text is passed through a best-effort secret redactor (API keys, tokens, JWTs, `password=` style pairs, long hex/base64 blobs), which will not catch everything.
 - **XSS**: all transcript-derived text is rendered with `textContent`, and a strict Content-Security-Policy (`default-src 'self'`, no inline script) is sent on every response.
 - **Hook endpoint**: accepts requests from `127.0.0.1` only, with a key derived from the master secret.
+- **Control (break room)**: a paired device can stop a Claude session, and nothing else: no prompts, no commands, no file access. `POST /api/office` needs the session cookie, a JSON body and a same-origin `Origin` header (so other web pages cannot trigger it), and every bench/unbench is logged with the client IP. Anyone holding a paired phone can interrupt your sessions; set `control: false` if that matters.
 - **Not for the internet**: do not port-forward this or publish it on a public URL. If you ever want remote access, that needs an IT/security review first and a proper authenticated tunnel (for example, a zero-trust access proxy), not an open port.
 - **Android app**: allows cleartext HTTP (needed for a LAN server without TLS), only navigates to the configured dashboard address and its bundled clock, and exposes a single `vibrate` function to page JavaScript. It is signed with a locally generated key and sideloaded, so it has had no store review. `/app.apk` needs a paired session; `/api/ping` is public but returns an empty 204.
 - **Router rule**: when allowing the phone VLAN through the Sophos, scope it to the phone (or Wi-Fi range) to the PC's IP on TCP 7865 only. If the Sophos is a managed or work network rather than a home one, get that change reviewed by IT/security first.

@@ -42,6 +42,14 @@ const claude = cfg.claude.enabled ? new ClaudeWatcher({ ...cfg.claude, log }).st
 
 // Host header allow-list blocks DNS-rebinding pages from talking to us via a hostile name.
 const hostname = os.hostname().toLowerCase();
+function sameOrigin(req) {
+  try {
+    return new URL(req.headers.origin).host === req.headers.host;
+  } catch {
+    return false;
+  }
+}
+
 function hostOk(req) {
   const h = (req.headers.host || '').toLowerCase().replace(/:\d+$/, '').replace(/^\[|\]$/g, '');
   return h === 'localhost' || h === hostname || h === `${hostname}.local` || h === `${hostname}.lan` || /^[\d.]+$/.test(h) || h.includes(':');
@@ -100,7 +108,7 @@ function uiVersion() {
 }
 let lastUiVersion = uiVersion();
 function hello() {
-  return { host: os.hostname(), dim: cfg.dim, claude: !!claude, detail: cfg.claude.detail, serverTime: Date.now(), ui: lastUiVersion };
+  return { host: os.hostname(), dim: cfg.dim, claude: !!claude, detail: cfg.claude.detail, control: !!cfg.control, serverTime: Date.now(), ui: lastUiVersion };
 }
 setInterval(() => {
   const v = uiVersion();
@@ -132,6 +140,8 @@ const server = http.createServer(async (req, res) => {
     if (p === '/api/hook' && req.method === 'POST') {
       if (!isLoopback(ip) || !safeEqual(req.headers['x-monitor-key'], pairing.hookToken)) return send(res, 403, 'Forbidden');
       const body = JSON.parse(await readBody(req));
+      // Before each tool call: tell the relay to halt a session that was sent to the break room.
+      if (body.hook_event_name === 'PreToolUse') return json(res, 200, { stop: !!(cfg.control && claude?.isBenched(body.session_id)) });
       claude?.hook(body);
       return send(res, 204, '');
     }
@@ -182,6 +192,18 @@ const server = http.createServer(async (req, res) => {
       clients.add(res);
       req.on('close', () => clients.delete(res));
       return;
+    }
+    // Office control: bench/unbench a session. Stop-only; JSON + same-origin so other pages cannot trigger it.
+    if (p === '/api/office' && req.method === 'POST') {
+      if (!cfg.control || !claude) return json(res, 403, { error: 'control disabled' });
+      if (!sameOrigin(req)) return json(res, 403, { error: 'bad origin' });
+      if (!/^application\/json\s*(;|$)/i.test(req.headers['content-type'] || '')) return json(res, 415, { error: 'json only' });
+      const b = JSON.parse(await readBody(req, 2048));
+      if (typeof b.session !== 'string' || b.session.length > 100 || !['bench', 'unbench'].includes(b.action)) return json(res, 400, { error: 'bad request' });
+      const ok = claude.bench(b.session, b.action === 'bench');
+      log(`office: ${b.action} ${b.session.slice(0, 8)} from ${ip}${ok ? '' : ' (unknown session)'}`);
+      if (ok) broadcast('claude', claude.snapshot());
+      return json(res, ok ? 200 : 404, { ok });
     }
     if (p === '/api/snapshot') return json(res, 200, { hello: hello(), system: system.snapshot(), claude: claude?.snapshot() ?? null });
 

@@ -1,5 +1,6 @@
 // Adds (or with --remove, removes) the Notification + Stop hooks in ~/.claude/settings.json
-// that let the dashboard show "needs your permission" states. Backs the file up first.
+// that let the dashboard show "needs your permission" states, and the PreToolUse hook that lets
+// the office break room stop a session. Backs the file up first.
 import fs from 'node:fs';
 import os from 'node:os';
 import path from 'node:path';
@@ -8,7 +9,7 @@ import { fileURLToPath } from 'node:url';
 const ROOT = path.resolve(path.dirname(fileURLToPath(import.meta.url)), '..');
 const RELAY = path.join(ROOT, 'hooks', 'relay.mjs').replace(/\\/g, '/');
 const COMMAND = `node "${RELAY}"`;
-const EVENTS = ['Notification', 'Stop'];
+const EVENTS = ['Notification', 'Stop', 'PreToolUse'];
 const SETTINGS = path.join(os.homedir(), '.claude', 'settings.json');
 const remove = process.argv.includes('--remove');
 

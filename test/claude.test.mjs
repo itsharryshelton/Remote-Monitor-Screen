@@ -116,3 +116,25 @@ test('watcher tails files incrementally and links subagents', async () => {
   assert.match(snap.sessions[0].text, /1 agent running/);
   fs.rmSync(root, { recursive: true, force: true });
 });
+
+test('bench holds a session until its next prompt, and only for known main sessions', () => {
+  const w = new ClaudeWatcher({ root: os.tmpdir() });
+  const s = new SessionState({});
+  s.ingest(prompt(0, 'Long refactor'));
+  s.ingest(toolUse(5, 't1', 'Bash', { command: 'npm test' }));
+  w.files.set('S1.jsonl', { state: s });
+
+  assert.equal(w.bench('nope', true), false);
+  assert.equal(w.isBenched('S1'), false);
+  assert.equal(w.bench('S1', true, T0 + 10_000), true);
+  assert.equal(w.isBenched('S1'), true);
+  assert.equal(w.snapshot(T0 + 11_000).sessions[0].benched, true);
+
+  // A new prompt from you after benching puts it back to work.
+  s.ingest(prompt(20, 'Carry on'));
+  assert.equal(w.isBenched('S1'), false);
+
+  w.bench('S1', true, T0 + 30_000);
+  w.bench('S1', false);
+  assert.equal(w.isBenched('S1'), false);
+});

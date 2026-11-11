@@ -542,7 +542,7 @@ function connect() {
 }
 
 if (window.RmsNative) document.body.classList.add('in-app');
-window.RmsOffice?.mount($('office'), { card: sessionCard, dur, ago, model });
+window.RmsOffice?.mount($('office'), { card: sessionCard, dur, ago, model, control: () => !!state.hello?.control, vibrate: (ms) => vibrate(ms, ms) });
 setupControls();
 setView(state.view);
 tick();

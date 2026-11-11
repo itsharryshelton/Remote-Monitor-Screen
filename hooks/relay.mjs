@@ -1,7 +1,8 @@
 #!/usr/bin/env node
 // Claude Code hook -> Remote Monitor Screen relay.
 // Reads the hook JSON from stdin and forwards a trimmed copy to the local server.
-// Never blocks or fails Claude: short timeout, always exits 0, prints nothing.
+// Never fails Claude: short timeout, always exits 0. Prints nothing, except on PreToolUse for a
+// session you sent to the office break room, where it tells Claude Code to stop.
 import fs from 'node:fs';
 import path from 'node:path';
 import crypto from 'node:crypto';
@@ -31,12 +32,24 @@ try {
         notification_type: h.notification_type,
         message: typeof h.message === 'string' ? h.message.slice(0, 300) : undefined,
       });
-      await fetch(`http://127.0.0.1:${cfg.port || 7865}/api/hook`, {
+      const r = await fetch(`http://127.0.0.1:${cfg.port || 7865}/api/hook`, {
         method: 'POST',
         headers: { 'content-type': 'application/json', 'x-monitor-key': token },
         body,
         signal: AbortSignal.timeout(800),
       });
+      if (h.hook_event_name === 'PreToolUse' && r.ok) {
+        const reply = await r.json().catch(() => null);
+        if (reply?.stop) {
+          const reason = 'Sent to the break room from Remote Monitor Screen. Send a new prompt to resume.';
+          const out = JSON.stringify({
+            continue: false,
+            stopReason: reason,
+            hookSpecificOutput: { hookEventName: 'PreToolUse', permissionDecision: 'deny', permissionDecisionReason: reason },
+          });
+          return process.stdout.write(out, done);
+        }
+      }
     } catch {
       /* server not running: ignore */
     }
