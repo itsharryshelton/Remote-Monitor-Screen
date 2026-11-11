@@ -2,7 +2,9 @@ package dev.rms.monitor;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.UiModeManager;
 import android.content.SharedPreferences;
+import android.content.res.Configuration;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Build;
@@ -37,6 +39,8 @@ import java.util.concurrent.Executors;
  * Kiosk wrapper for the Remote Monitor Screen dashboard.
  * Loads the dashboard from the PC; if the PC cannot be reached, shows a bundled clock
  * (no network needed) and probes the PC every few seconds until it is back.
+ * Also runs on Android TV / Google TV: the page is told via RmsNative.isTv() and handles the remote's
+ * D-pad itself; Back goes to the page first (to close a card) and opens settings otherwise.
  */
 public class MainActivity extends Activity {
     private static final String CLOCK_URL = "file:///android_asset/clock.html";
@@ -53,11 +57,14 @@ public class MainActivity extends Activity {
     private boolean probing = false;
     private boolean dashboardLoaded = false;
     private int loadGeneration = 0;
+    private boolean tv = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         prefs = getSharedPreferences("rms", MODE_PRIVATE);
+        UiModeManager modes = getSystemService(UiModeManager.class);
+        tv = modes != null && modes.getCurrentModeType() == Configuration.UI_MODE_TYPE_TELEVISION;
         getWindow().addFlags(WindowManager.LayoutParams.FLAG_KEEP_SCREEN_ON);
         if (Build.VERSION.SDK_INT >= 28) {
             getWindow().getAttributes().layoutInDisplayCutoutMode =
@@ -87,8 +94,12 @@ public class MainActivity extends Activity {
         s.setSupportZoom(false);
         web.addJavascriptInterface(new Bridge(), "RmsNative");
         web.setWebViewClient(new Client());
+        // The TV remote's D-pad only reaches the page while the WebView holds focus.
+        web.setFocusable(true);
+        web.setFocusableInTouchMode(true);
         root.addView(web, new FrameLayout.LayoutParams(
             FrameLayout.LayoutParams.MATCH_PARENT, FrameLayout.LayoutParams.MATCH_PARENT));
+        web.requestFocus();
     }
 
     private String serverUrl() {
@@ -195,6 +206,7 @@ public class MainActivity extends Activity {
         @Override
         public void onPageFinished(WebView view, String url) {
             if (url != null && !url.startsWith("file:")) dashboardLoaded = true;
+            if (!view.hasFocus()) view.requestFocus();
         }
 
         @Override
@@ -234,11 +246,19 @@ public class MainActivity extends Activity {
         public boolean isApp() {
             return true;
         }
+
+        @JavascriptInterface
+        public boolean isTv() {
+            return tv;
+        }
     }
 
     @Override
     public void onBackPressed() {
-        showSettings();
+        // Let the page close whatever is open (a session card, a focus ring) before showing settings.
+        if (showingClock) { showSettings(); return; }
+        web.evaluateJavascript("(function(){try{return !!(window.RmsKeys&&window.RmsKeys.back());}catch(e){return false;}})()",
+            v -> { if (!"true".equals(v)) showSettings(); });
     }
 
     private void showSettings() {
@@ -260,7 +280,7 @@ public class MainActivity extends Activity {
             })
             .setNeutralButton("Reload", (d, w) -> loadDashboard())
             .setNegativeButton("Exit", (d, w) -> finish())
-            .setOnDismissListener(d -> hideSystemUi())
+            .setOnDismissListener(d -> { hideSystemUi(); web.requestFocus(); })
             .show();
     }
 

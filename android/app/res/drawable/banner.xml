@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Android TV / Google TV launcher banner (320x180 dp): pulse mark and "MONITOR" drawn as strokes. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="320dp" android:height="180dp"
+    android:viewportWidth="320" android:viewportHeight="180">
+    <path android:pathData="M0,0 H320 V180 H0 Z" android:fillColor="#000000" />
+    <path android:pathData="M28,97 L44.8,97 L53.2,71.8 L64.4,108.2 L72.8,85.8 L95.2,85.8"
+        android:strokeColor="#4CC9F0" android:strokeWidth="6"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+    <path android:pathData="M114,106 L114,74 L124,92 L134,74 L134,106 M149,74 H155 Q162,74 162,81 V99 Q162,106 155,106 H149 Q142,106 142,99 V81 Q142,74 149,74 Z M170,106 V74 L190,106 V74 M208,74 V106 M202,74 H214 M202,106 H214 M226,74 H246 M236,74 V106 M261,74 H267 Q274,74 274,81 V99 Q274,106 267,106 H261 Q254,106 254,99 V81 Q254,74 261,74 Z M282,106 V74 H294 Q302,74 302,82 Q302,90 294,90 H282 M292,90 L302,106"
+        android:strokeColor="#E8EAED" android:strokeWidth="4"
+        android:strokeLineCap="round" android:strokeLineJoin="round"
+        android:fillColor="#00000000" />
+</vector>

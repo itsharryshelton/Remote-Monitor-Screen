@@ -316,3 +316,11 @@
 @media (prefers-reduced-motion: reduce) {
   .office *, .office *::before, .office *::after { animation: none !important; transition: none !important; }
 }
+
+/* Remote-control focus ring (keys.js). */
+.pp.kfocus { z-index: 30; }
+.pp.kfocus::after {
+  content: ""; position: absolute; inset: -7px; border-radius: 50%; pointer-events: none;
+  box-shadow: 0 0 0 3px var(--cpu), 0 0 14px 4px rgba(76, 201, 240, 0.55);
+}
+.tv .office-pop { width: min(420px, 55%); }

@@ -18,6 +18,7 @@
     "firewall": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/allow-firewall.ps1",
     "autostart": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-autostart.ps1",
     "apk:setup": "powershell -NoProfile -ExecutionPolicy Bypass -File android/setup-toolchain.ps1",
-    "apk": "powershell -NoProfile -ExecutionPolicy Bypass -File android/build.ps1"
+    "apk": "powershell -NoProfile -ExecutionPolicy Bypass -File android/build.ps1",
+    "apk:tv": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/install-tv.ps1"
   }
 }

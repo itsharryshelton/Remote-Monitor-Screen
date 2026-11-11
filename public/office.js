@@ -838,6 +838,21 @@
     mount,
     render,
     refit: () => { layoutKey = null; if (lastData) render(lastData); },
+    // Remote / keyboard navigation (keys.js).
+    hold: () => { lastTouch = Date.now(); }, // pause auto-pan, as a touch does
+    toggleCard: (key) => {
+      popKey = key && key !== popKey ? key : null;
+      renderPop(Date.now());
+    },
+    showCard: (key) => {
+      if (popKey && key && key !== popKey) { popKey = key; renderPop(Date.now()); }
+    },
+    closeCard: () => {
+      if (!popKey) return false;
+      popKey = null;
+      renderPop(Date.now());
+      return true;
+    },
     // For testing: send someone to the kitchen now.
     _trip: () => {
       if (!lastModel) return;

@@ -1,6 +1,6 @@
 # Remote Monitor Screen
 
-Turns a spare Android phone (built for a OnePlus Nord AC2003, works on anything with Chrome) into an always-on desk display for this PC:
+Turns a spare Android phone (built for a OnePlus Nord AC2003, works on anything with Chrome) into an always-on desk display for this PC, and puts the Agents view on a Google TV or Android TV ([below](#google-tv--android-tv)):
 
 - **System**: CPU % (Task Manager figure) with per-core bars and effective clock, GPU % (max engine, same as Task Manager) with VRAM, memory, network and disk throughput, 2-minute sparklines, clock and uptime.
 - **Temperatures, fans, power**: CPU Tctl/Tdie, GPU core/hotspot, GPU power and fan, motherboard fans, via LibreHardwareMonitor (optional, see below).
@@ -72,6 +72,40 @@ ms-android
 ms-signing.jks` (password beside it, outside the repo). Keep it: Android only installs updates signed with the same key.
 
 The dashboard in a normal browser also switches to the clock when the PC goes offline, but only while the page stays open: if Chrome reloads the tab while the PC is off you get Chrome's error page. The app avoids that.
+
+## Google TV / Android TV
+
+The same APK runs on Android TV and Google TV (Chromecast with Google TV, Google TV Streamer, TVs with Google TV built in). It shows up in the TV's app row, opens straight into the **Agents** view, and keeps the TV from going to its screensaver while it is open. There is no Chrome on Google TV, so the app is the way to get the dashboard on it.
+
+**Remote control:**
+
+| Button | Does |
+|---|---|
+| ◀ ▲ ▶ ▼ | First press shows a focus ring; then moves it between people in the office and the view buttons at the top |
+| OK | Opens (or closes) the focused person's session card; on a button, presses it. With a card open, moving to someone else shows their card |
+| Back | Closes the card, then the ring; with nothing open, opens settings (dashboard address, reload, exit) |
+
+After 20 seconds without a key press the ring and card go away and the office goes back to drifting on its own. Benching a session (drag to the break room) needs a touchscreen, so on the TV the office is view-only.
+
+**Install** (sideloaded over the network with adb; the toolchain from `npm run apk:setup` includes it):
+
+1. On the TV: Settings → System → About → select **Android TV OS build** 7 times to unlock developer options.
+2. Settings → System → **Developer options**, then either:
+   - **USB debugging** on (most Chromecast with Google TV and Android TV devices: adb then listens on port 5555), or
+   - **Wireless debugging** on → *Pair device with pairing code* (newer Google TV devices): note the pairing address and code, and the address shown on the Wireless debugging screen.
+3. Find the TV's IP (Settings → Network & Internet → your network), then on the PC:
+   ```powershell
+   npm run apk                                                       # if not built yet
+   npm run apk:tv -- -Tv 192.168.1.50                                # USB debugging (port 5555)
+   npm run apk:tv -- -Tv 192.168.1.50:41235 -Pair 192.168.1.50:37099 # Wireless debugging: asks for the pairing code
+   ```
+   Accept the *Allow debugging?* prompt on the TV the first time.
+4. In the app on the TV: press **Back**, set the dashboard address (for example `http://10.0.100.10:7865`), **Save**, then pair: select the code box, press OK for the on-screen keyboard and enter the code from `npm run pair`.
+5. **Turn debugging off again** (Developer options → USB/Wireless debugging off). While it is on, anything on your network that the TV has authorised can control it.
+
+If the TV is on a different VLAN from the PC, it needs the same router and Windows firewall allowance as the phone (see [Troubleshooting](#troubleshooting)).
+
+To try the TV layout in a desktop browser, open `http://localhost:7865/?tv` and use the arrow keys and Enter.
 
 ## Phone setup (browser or app)
 
@@ -177,7 +211,7 @@ Please read before running this on anything other than a trusted home network.
 - **Hook endpoint**: accepts requests from `127.0.0.1` only, with a key derived from the master secret.
 - **Control (break room)**: a paired device can stop a Claude session, and nothing else: no prompts, no commands, no file access. `POST /api/office` needs the session cookie, a JSON body and a same-origin `Origin` header (so other web pages cannot trigger it), and every bench/unbench is logged with the client IP. Anyone holding a paired phone can interrupt your sessions; set `control: false` if that matters.
 - **Not for the internet**: do not port-forward this or publish it on a public URL. If you ever want remote access, that needs an IT/security review first and a proper authenticated tunnel (for example, a zero-trust access proxy), not an open port.
-- **Android app**: allows cleartext HTTP (needed for a LAN server without TLS), only navigates to the configured dashboard address and its bundled clock, and exposes a single `vibrate` function to page JavaScript. It is signed with a locally generated key and sideloaded, so it has had no store review. `/app.apk` needs a paired session; `/api/ping` is public but returns an empty 204.
+- **Android app**: allows cleartext HTTP (needed for a LAN server without TLS), only navigates to the configured dashboard address and its bundled clock, and exposes only `vibrate` and two flags (`isApp`, `isTv`) to page JavaScript. It is signed with a locally generated key and sideloaded, so it has had no store review. `/app.apk` needs a paired session; `/api/ping` is public but returns an empty 204.
 - **Router rule**: when allowing the phone VLAN through the Sophos, scope it to the phone (or Wi-Fi range) to the PC's IP on TCP 7865 only. If the Sophos is a managed or work network rather than a home one, get that change reviewed by IT/security first.
 - **Third-party software**: LibreHardwareMonitor runs with admin rights and installs a kernel driver. Get it from the official GitHub releases or winget only.
 
@@ -199,7 +233,8 @@ server/collectors/lhm.mjs     polls LibreHardwareMonitor's data.json, extracts h
 server/collectors/system.mjs  merges os.cpus() (per-core), perf counters and LHM into one snapshot
 server/collectors/claude.mjs  incremental tail of Claude Code transcripts + subagent meta, hook events
 public/clock.*                offline clock (dashboard overlay + bundled in the APK)
-android/                      kiosk app source, toolchain setup and build scripts (no Gradle)
+android/                      kiosk app source (phone and Android/Google TV), toolchain setup and build scripts (no Gradle)
+public/keys.js                remote-control (D-pad) and keyboard navigation for the TV
 public/                       dashboard (vanilla JS, canvas sparklines), login page, PWA manifest
 hooks/relay.mjs               optional Claude Code hook -> local server
 scripts/                      firewall rule, background start/stop, autostart, pairing, hook installer

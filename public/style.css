@@ -245,3 +245,9 @@ body.dim .dimmer { opacity: var(--dim, 0.65); }
   .cores { height: 10px; }
   .host { display: none; }
 }
+
+/* ---------- TV (Android TV / Google TV app) and remote-control focus ---------- */
+/* Keep clear of the edges: some TVs still overscan. */
+.tv .app { padding: max(16px, 3vh) max(24px, 3vw); }
+.tv #fs { display: none; }
+button.kfocus { color: var(--text); border-color: var(--cpu); box-shadow: 0 0 0 2px var(--cpu); position: relative; z-index: 1; }

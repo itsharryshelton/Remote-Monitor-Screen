@@ -8,6 +8,10 @@ const store = {
   set: (k, v) => localStorage.setItem(`rms:${k}`, JSON.stringify(v)),
 };
 
+// Android TV / Google TV app (or ?tv for trying the TV layout in a browser): Agents view by default,
+// remote-control navigation (keys.js), overscan-safe margins.
+const TV = !!window.RmsNative?.isTv?.() || new URLSearchParams(location.search).has('tv');
+
 const state = {
   hello: null,
   sys: null,
@@ -17,7 +21,7 @@ const state = {
   prevStatus: new Map(),
   flash: new Map(),
   chime: store.get('chime', false),
-  view: store.get('view', 'split'),
+  view: store.get('view', TV ? 'agents' : 'split'),
   undimUntil: 0,
   loadedAt: Date.now(),
 };
@@ -503,14 +507,16 @@ function setupControls() {
     } catch { /* not supported */ }
     keepAwake();
   });
-  // Tap anywhere during night-dim to brighten for a minute.
-  document.addEventListener('pointerdown', () => {
+  // Tap anywhere (or press a remote key) during night-dim to brighten for a minute.
+  const wake = () => {
     if (document.body.classList.contains('dim')) {
       state.undimUntil = Date.now() + 60000;
       document.body.classList.remove('dim');
     }
     keepAwake();
-  });
+  };
+  document.addEventListener('pointerdown', wake);
+  document.addEventListener('keydown', wake);
   document.addEventListener('visibilitychange', keepAwake);
   new ResizeObserver(() => drawSparks()).observe(document.body);
 }
@@ -542,6 +548,7 @@ function connect() {
 }
 
 if (window.RmsNative) document.body.classList.add('in-app');
+if (TV) document.body.classList.add('tv');
 window.RmsOffice?.mount($('office'), { card: sessionCard, dur, ago, model, control: () => !!state.hello?.control, vibrate: (ms) => vibrate(ms, ms) });
 setupControls();
 setView(state.view);

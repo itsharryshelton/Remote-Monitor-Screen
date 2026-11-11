@@ -6,7 +6,7 @@
 param(
   [string]$ServerUrl = 'http://10.0.100.10:7865',
   [string]$Toolchain = (Join-Path $env:LOCALAPPDATA 'rms-android'),
-  [string]$VersionName = '0.2.0'
+  [string]$VersionName = '0.3.0'
 )
 
 $ErrorActionPreference = 'Stop'
