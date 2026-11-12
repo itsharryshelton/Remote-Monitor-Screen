@@ -1,6 +1,6 @@
 {"id":0,"Text":"Sensor","Min":"Min","Value":"Value","Max":"Max","ImageURL":"","Children":[
- {"id":1,"Text":"WARPY","Min":"","Value":"","Max":"","ImageURL":"images_icon/computer.png","Children":[
-  {"id":2,"Text":"ASUS ROG STRIX B650E-F","Min":"","Value":"","Max":"","ImageURL":"images_icon/mainboard.png","Children":[
+ {"id":1,"Text":"MY-PC","Min":"","Value":"","Max":"","ImageURL":"images_icon/computer.png","Children":[
+  {"id":2,"Text":"Generic B650 Motherboard","Min":"","Value":"","Max":"","ImageURL":"images_icon/mainboard.png","Children":[
    {"id":3,"Text":"Nuvoton NCT6799D","Min":"","Value":"","Max":"","ImageURL":"images_icon/chip.png","Children":[
     {"id":4,"Text":"Fans","Min":"","Value":"","Max":"","ImageURL":"images_icon/fan.png","Children":[
      {"id":5,"Text":"Fan #1","Min":"0 RPM","Value":"1,021 RPM","Max":"1,450 RPM","ImageURL":"images/transparent.png","Children":[]},
