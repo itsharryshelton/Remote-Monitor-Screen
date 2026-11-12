@@ -522,9 +522,18 @@ function setupControls() {
 }
 
 // ---------- stream ----------
+// A sleeping PC vanishes without closing the TCP connection, so the EventSource can sit "open" on a
+// dead socket forever (no onerror) and never pick the PC back up when it wakes. The server sends
+// 'system' every second, so if nothing arrives for STALL_MS, throw the connection away and open a new one.
+const STALL_MS = 8000;
 let es;
+let lastEvent = 0;
 function connect() {
-  es = new EventSource('/api/stream');
+  es?.close();
+  lastEvent = Date.now(); // give the new connection a full STALL_MS to deliver its first event
+  const mine = (es = new EventSource('/api/stream'));
+  const seen = () => { if (es === mine) lastEvent = Date.now(); };
+  for (const type of ['hello', 'system', 'claude']) mine.addEventListener(type, seen);
   es.addEventListener('hello', (e) => {
     const next = JSON.parse(e.data);
     // Dashboard files changed on the PC (update, or server restarted with new code): load them.
@@ -535,17 +544,25 @@ function connect() {
   es.addEventListener('system', (e) => onSystem(JSON.parse(e.data)));
   es.addEventListener('claude', (e) => onClaude(JSON.parse(e.data)));
   es.onerror = () => {
-    if (es.readyState === EventSource.CLOSED) {
+    if (mine.readyState === EventSource.CLOSED) {
       setTimeout(async () => {
+        if (es !== mine) return; // the watchdog already replaced this connection
         try {
           const r = await fetch('/api/snapshot', { cache: 'no-store' });
           if (r.status === 401) return location.replace('/login.html');
         } catch { /* server down; retry */ }
-        connect();
+        if (es === mine) connect();
       }, 3000);
     }
   };
 }
+function checkStream() {
+  if (Date.now() - lastEvent > STALL_MS) connect();
+}
+setInterval(checkStream, 2000);
+// Phone screen back on / network back: check straight away rather than on the next tick.
+document.addEventListener('visibilitychange', () => { if (document.visibilityState === 'visible') checkStream(); });
+window.addEventListener('online', () => connect());
 
 if (window.RmsNative) document.body.classList.add('in-app');
 if (TV) document.body.classList.add('tv');
