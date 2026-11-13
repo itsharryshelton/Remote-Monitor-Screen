@@ -163,12 +163,9 @@ main {
 .chip.attn { color: #111; background: var(--warn); font-weight: 700; }
 .chip.ok { color: var(--ok); }
 
-.sessions { flex: 0 1 auto; max-height: 68%; overflow: auto; margin-top: 6px; display: flex; flex-direction: column; gap: 6px; scrollbar-width: none; }
-[data-view="agents"] .sessions { max-height: 75%; display: grid; grid-template-columns: repeat(auto-fill, minmax(330px, 1fr)); align-content: start; align-items: start; }
 [data-view="split"] .summary, [data-view="agents"] .summary { display: none; }
-.sessions::-webkit-scrollbar, .feed::-webkit-scrollbar { display: none; }
 
-.s { border-radius: 10px; background: #0f1216; border: 1px solid var(--line); padding: 7px 9px; position: relative; overflow: hidden; }
+.s { flex: none; border-radius: 10px; background: #0f1216; border: 1px solid var(--line); padding: 7px 9px; position: relative; overflow: hidden; }
 .s::before { content: ""; position: absolute; left: 0; top: 0; bottom: 0; width: 3px; background: var(--faint); }
 .s.working::before { background: var(--work); }
 .s.attention::before { background: var(--warn); }
@@ -201,17 +198,6 @@ main {
 .s.compact { padding: 5px 9px; }
 .s.compact .s-top .what { color: var(--muted); font-size: 12px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 
-.feed-head { margin-top: 8px; }
-.feed { list-style: none; margin: 4px 0 0; padding: 0; overflow: auto; flex: 1 1 0; min-height: 0; font-size: 12px; scrollbar-width: none; }
-.feed li { display: grid; grid-template-columns: auto auto minmax(0, 1fr); gap: 7px; padding: 2px 0; border-bottom: 1px solid #12161b; align-items: baseline; }
-.feed .ft { color: var(--faint); }
-.feed .fp { color: var(--muted); max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
-.feed .fx { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
-.feed .k-prompt .fx { color: #d9c8ff; }
-.feed .k-done .fx { color: var(--ok); }
-.feed .k-error .fx { color: var(--hot); }
-.feed .k-attention .fx { color: var(--warn); font-weight: 650; }
-.feed .k-agent .fx { color: #9cc3ff; }
 .empty { color: var(--muted); font-size: 13px; padding: 10px 2px; line-height: 1.5; }
 
 /* ---------- offline clock ---------- */
@@ -237,8 +223,6 @@ body.dim .dimmer { opacity: var(--dim, 0.65); }
   [data-view="system"] .system { grid-template-columns: repeat(2, minmax(0, 1fr)); grid-template-rows: repeat(2, 210px) auto; }
   .big { font-size: 46px; }
   .agents { min-height: 60vh; }
-  .sessions { max-height: none; }
-  .feed { max-height: 45vh; }
 }
 
 @media (max-height: 380px) and (orientation: landscape) {

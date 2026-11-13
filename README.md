@@ -28,14 +28,15 @@ It is read-only, with one exception: in the Agents view you can drag a session t
 
 - **System**: CPU % (the Task Manager figure) with per-core bars and effective clock. GPU % (busiest engine, as in Task Manager) with VRAM. Memory, network and disk throughput, 2-minute sparklines, clock and uptime.
 - **Temperatures, fans, power**: CPU Tctl/Tdie, GPU core/hotspot, GPU power and fan, motherboard fans. Needs LibreHardwareMonitor (optional).
-- **Claude Code sessions**: every active session (VS Code extension and CLI). For each one you see the current tool, file or command description, elapsed time, last prompt, to-do progress, context size and background subagents, plus a live activity feed. With the optional hook it also shows when a session is **waiting for your permission**, with a chime and vibration.
+- **Claude Code sessions**: every active session (VS Code extension and CLI). For each one you see the current tool, file or command description, elapsed time, last prompt, to-do progress, context size and background subagents. With the optional hook it also shows when a session is **waiting for your permission**, with a chime and vibration.
 - **Agents view (office)**: each session and each subagent is a person at a desk, grouped into pods by project.
   - A chat bubble shows what each one is doing (tool and file, thinking, needs you, done).
   - Quiet sessions walk to the break room for a nap. Idle people sometimes wander to the kitchen table.
   - A session with two or more subagents gets a whiteboard (its task, to-do progress, one sticky note per subagent).
   - The floor scales down to a readable size, then scrolls. It drifts on its own and jumps to anyone who needs you.
   - Tap a person for the full session card. Long-press to pick them up, and drop them in the break room to stop that session.
-- **Views**: **Split** (stats and agents), **System** (adds the sensor list), **Agents** (session grid and feed). Portrait works too and scrolls.
+- **Split view stage**: each session is a character drawn side-on, acting out what it is doing: typing at a desk (edits), at a terminal (commands), reading a book, searching a filing cabinet with a magnifying glass, pointing at a spinning globe (web), handing boxes to subagent helpers, writing a to-do list on an easel, thinking, cranking gears (skills and MCP tools), waving for you, feet up when done, or asleep when idle. Now and then an idle one does a chore instead: dusting their desk, cleaning their screen, or climbing a step stool to polish one of the PC stats tiles (which gets a real sheen). Characters are scattered over the whole stage, sized to fill it, and wear the same colours as in the Agents office. Tap one for its full session card.
+- **Views**: **Split** (stats and the stage), **System** (adds the sensor list), **Agents** (the office). Portrait works too and scrolls.
 - **Offline clock**: if no data arrives for 12 seconds, a large, slowly drifting clock shows when the PC was last seen. It disappears when data resumes.
 - **Burn-in protection**: true-black background, the layout shifts a few pixels every two minutes, and the screen dims overnight (default 23:00 to 07:00, configurable). It brightens when a Claude session needs you, or when tapped. Lowering the phone's brightness helps most.
 

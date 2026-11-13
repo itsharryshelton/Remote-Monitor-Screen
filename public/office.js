@@ -837,6 +837,8 @@
   window.RmsOffice = {
     mount,
     render,
+    /** A person's colours, so other views (the Split stage) draw the same character. */
+    look: (id) => ({ shirt: pick(SHIRTS, id, 'shirt'), hair: pick(HAIR, id, 'hair'), skin: pick(SKIN, id, 'skin') }),
     refit: () => { layoutKey = null; if (lastData) render(lastData); },
     // Remote / keyboard navigation (keys.js).
     hold: () => { lastTouch = Date.now(); }, // pause auto-pan, as a touch does

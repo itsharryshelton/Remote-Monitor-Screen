@@ -297,25 +297,9 @@ function renderClaude() {
 
   if (state.view === 'agents') {
     window.RmsOffice?.render(c, now);
-    return; // the office replaces the session cards and feed in this view
+    return; // the office replaces the stage in this view
   }
-
-  const sessions = $('sessions');
-  if (!c.sessions.length) {
-    sessions.replaceChildren(h('div', { class: 'empty' }, 'No Claude Code sessions active in the last few hours. Start one in VS Code or the CLI and it will appear here.'));
-  } else {
-    sessions.replaceChildren(...c.sessions.map((s) => sessionCard(s, now)));
-  }
-
-  const feed = $('feed');
-  feed.replaceChildren(
-    ...c.events.map((e) =>
-      h('li', { class: `k-${e.kind}` },
-        h('span', { class: 'ft' }, new Date(e.ts).toLocaleTimeString('en-GB', { hour: '2-digit', minute: '2-digit' })),
-        h('span', { class: 'fp', title: e.project || '' }, e.sub ? `↳ ${e.sub}` : e.project || ''),
-        h('span', { class: 'fx', title: e.text }, e.text)),
-    ),
-  );
+  window.RmsStage?.render(c, now);
 }
 
 function sessionCard(s, now) {
@@ -567,6 +551,7 @@ window.addEventListener('online', () => connect());
 if (window.RmsNative) document.body.classList.add('in-app');
 if (TV) document.body.classList.add('tv');
 window.RmsOffice?.mount($('office'), { card: sessionCard, dur, ago, model, control: () => !!state.hello?.control, vibrate: (ms) => vibrate(ms, ms) });
+window.RmsStage?.mount($('stage'), { card: sessionCard, dur, ago, look: (id) => window.RmsOffice?.look(id), data: () => state.claude });
 setupControls();
 setView(state.view);
 tick();
