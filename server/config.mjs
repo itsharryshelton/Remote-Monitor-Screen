@@ -17,7 +17,7 @@ const DEFAULTS = {
     // "full": prompts, assistant text snippets and command descriptions (secret-redacted).
     // "minimal": tool names and file names only.
     detail: 'full',
-    windowMinutes: 240,
+    windowMinutes: 45,
   },
   // Only these client ranges may connect (CIDR). Defaults to loopback + private LAN ranges.
   allow: ['127.0.0.0/8', '10.0.0.0/8', '172.16.0.0/12', '192.168.0.0/16', '::1/128', 'fc00::/7', 'fe80::/10'],

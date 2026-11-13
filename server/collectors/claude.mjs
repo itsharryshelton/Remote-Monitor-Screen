@@ -269,7 +269,7 @@ export class SessionState {
 }
 
 export class ClaudeWatcher {
-  constructor({ root = path.join(os.homedir(), '.claude', 'projects'), windowMinutes = 240, detail = 'full', log = () => {} } = {}) {
+  constructor({ root = path.join(os.homedir(), '.claude', 'projects'), windowMinutes = 45, detail = 'full', log = () => {} } = {}) {
     this.root = root;
     this.windowMs = windowMinutes * 60 * 1000;
     this.detail = detail;

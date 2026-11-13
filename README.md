@@ -118,7 +118,7 @@ Settings live in `config.local.json` (created on first run, see [Getting started
 | `lhmUrl` | `http://127.0.0.1:8085/data.json` | LibreHardwareMonitor endpoint |
 | `claude.enabled` | `true` | Turn the agent panel off entirely |
 | `claude.detail` | `full` | `full`: prompts, reply snippets, command descriptions (secret-redacted). `minimal`: tool names and file names only |
-| `claude.windowMinutes` | `240` | How far back sessions are shown |
+| `claude.windowMinutes` | `45` | How far back sessions are shown |
 | `allow` | loopback + private ranges | CIDR list of clients allowed to connect |
 | `dim` | `23:00` to `07:00`, level `0.35` | Night dimming. `level` is the remaining brightness |
 | `control` | `true` | Allow stopping a session by dragging it to the break room. `false` makes the dashboard fully read-only |
