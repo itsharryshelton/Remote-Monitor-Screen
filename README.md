@@ -4,6 +4,9 @@ Remote Monitor Screen turns a spare Android phone into an always-on desk display
 
 It is read-only, with one exception: in the Agents view you can drag a session to the break room to stop it (see [Stopping a session from the phone](#stopping-a-session-from-the-phone)). Set `control: false` to turn that off.
 
+<img width="1830" height="824" alt="image" src="https://github.com/user-attachments/assets/cda1fc59-988c-45bd-9c3c-1bb3d2e11983" />
+
+
 ## Contents
 
 - [Features](#features)
@@ -40,6 +43,9 @@ It is read-only, with one exception: in the Agents view you can drag a session t
 - **Offline clock**: if no data arrives for 12 seconds, a large, slowly drifting clock shows when the PC was last seen. It disappears when data resumes.
 - **Burn-in protection**: true-black background, the layout shifts a few pixels every two minutes, and the screen dims overnight (default 23:00 to 07:00, configurable). It brightens when a Claude session needs you, or when tapped. Lowering the phone's brightness helps most.
 
+<img width="756" height="454" alt="image" src="https://github.com/user-attachments/assets/3e7142e9-5760-4eb8-a320-a7ac1dd092bf" />
+
+
 ## Requirements
 
 - Windows 10 or 11 on the PC
@@ -47,6 +53,9 @@ It is read-only, with one exception: in the Agents view you can drag a session t
 - A phone with Chrome, or an Android phone/TV for the optional app, on the same network as the PC
 - No `npm install` needed (the project has no dependencies)
 - Optional: [LibreHardwareMonitor](#temperatures-librehardwaremonitor) for temperatures, and the [Claude Code hooks](#claude-code-hooks-and-the-agents-office) for permission alerts and the break-room stop
+
+<img width="2553" height="1272" alt="image" src="https://github.com/user-attachments/assets/ba1d1cc5-3b69-4784-86af-03e6681ddbc5" />
+
 
 ## Getting started
 
